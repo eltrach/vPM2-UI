@@ -11,10 +11,8 @@
 
 - 🔒 Secure Authentication System
 - 📊 Real-time Process Monitoring
-- 📝 Advanced Log Management
+- 📝 Log Management
 - 🎨 Modern, Responsive UI
-- 🔄 Zero-downtime Deployments
-- 🌐 GitHub Webhook Integration
 - ⚙️ Environment Variable Management
 
 ### Process Management
@@ -22,16 +20,7 @@
 - Start/Stop/Restart Applications
 - Monitor CPU & Memory Usage
 - View Real-time Logs
-- Process Scaling
 - Error Tracking
-
-### Deployment Features
-
-- Manual & Automated Deployments
-- GitHub Integration
-- Deployment History
-- Rollback Capability
-- Environment Management
 
 ## 🚀 Quick Start
 
@@ -44,8 +33,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/vpm2-ui.git
-cd vpm2-ui
+git clone https://github.com/eltrach/vPM2-UI.git
+cd vPM2-UI
 
 # Install dependencies
 bun install
@@ -81,7 +70,6 @@ The application can be configured through environment variables. See [env.exampl
 ## 📸 Screenshots
 
 <div align="center">
-  <img src="screenshots/login.png" alt="Login Screen" width="400"/>
   <img src="screenshots/app.png" alt="Application Management" width="400"/>
 </div>
 
@@ -90,7 +78,7 @@ The application can be configured through environment variables. See [env.exampl
 - [Koa.js](https://koajs.com/) - Web framework
 - [PM2](https://pm2.keymetrics.io/) - Process Manager
 - [Bun](https://bun.sh/) - JavaScript Runtime & Package Manager
-- [shadcn/ui](https://ui.shadcn.com/) - UI Components
+- [Tabler](https://tabler.io/) - UI Components
 
 ## 🤝 Contributing
 
