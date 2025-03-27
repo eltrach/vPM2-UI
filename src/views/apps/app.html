@@ -146,20 +146,21 @@
         <div class="card">
           <ul class="nav nav-tabs" data-bs-toggle="tabs">
             <li class="nav-item">
-              <a href="#stdout" class="nav-link active" data-bs-toggle="tab"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-thumb-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <a href="#stdout" class="nav-link active" data-bs-toggle="tab">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path d="M7 11v8a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-7a1 1 0 0 1 1 -1h3a4 4 0 0 0 4 -4v-1a2 2 0 0 1 4 0v5h3a2 2 0 0 1 2 2l-1 5a2 3 0 0 1 -2 2h-7a3 3 0 0 1 -3 -3"></path>
-               </svg>
-                STDOUT</a>
+                  <path d="M5 12l5 5l10 -10"></path>
+                </svg>
+                Output Log</a>
             </li>
             <li class="nav-item">
-              <a href="#stderr" class="nav-link" data-bs-toggle="tab"><!-- Download SVG icon from http://tabler-icons.io/i/user -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-thumb-down" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <a href="#stderr" class="nav-link" data-bs-toggle="tab">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-alert-triangle" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path d="M7 13v-8a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v7a1 1 0 0 0 1 1h3a4 4 0 0 1 4 4v1a2 2 0 0 0 4 0v-5h3a2 2 0 0 0 2 -2l-1 -5a2 3 0 0 0 -2 -2h-7a3 3 0 0 0 -3 3"></path>
-               </svg>
-                STDERR</a>
+                  <path d="M12 9v2m0 4v.01"></path>
+                  <path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75"></path>
+                </svg>
+                Error Log</a>
             </li>
             <li class="nav-item ms-auto">
               <button class="btn btn-icon shadow-none" style="border:none !important;" onclick="nextLogs()">
@@ -174,6 +175,16 @@
                   <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"></path>
                   <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
                </svg>
+              </button>
+              <button class="btn btn-icon shadow-none text-danger" style="border:none !important;" onclick="clearLogs()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                  <path d="M4 7l16 0"></path>
+                  <path d="M10 11l0 6"></path>
+                  <path d="M14 11l0 6"></path>
+                  <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+                  <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+                </svg>
               </button>
             </li>
           </ul>
@@ -210,6 +221,23 @@
     </div>
   </div>
 </div>
+
+<style>
+  code.bg-dark {
+    padding: 1rem;
+    font-size: 0.9em;
+    line-height: 1.5;
+  }
+  
+  .terminal-line {
+    display: block;
+    padding: 2px 0;
+  }
+  
+  .terminal-line:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+</style>
 
 <script src="/assets/js/prism.js"></script>
 <script>
@@ -269,6 +297,78 @@
       else{
         console.log('Unable to fetch logs')
       }
+    }
+  }
+
+  async function clearLogs() {
+    if (!confirm('Are you sure you want to clear the logs?')) return;
+    
+    try {
+      const response = await fetch(`/api/apps/<%= app.name %>/logs/flush`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        // Clear both stdout and stderr logs in the UI
+        $('#stdout code').html('');
+        $('#stderr code').html('');
+        // Show success message
+        showNotification('success', 'Logs cleared successfully');
+        // Refresh both log displays
+        await refreshLogs();
+      } else {
+        const errorData = await response.text();
+        showNotification('error', `Failed to clear logs: ${errorData}`);
+      }
+    } catch (error) {
+      console.error('Error clearing logs:', error);
+      showNotification('error', 'Failed to clear logs: Network error');
+    }
+  }
+
+  function showNotification(type, message) {
+    const notificationClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const notification = `
+      <div class="alert ${notificationClass} alert-dismissible fade show" role="alert">
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    `;
+    
+    // Add notification to the page
+    const notificationContainer = document.createElement('div');
+    notificationContainer.style.position = 'fixed';
+    notificationContainer.style.top = '20px';
+    notificationContainer.style.right = '20px';
+    notificationContainer.style.zIndex = '9999';
+    notificationContainer.innerHTML = notification;
+    document.body.appendChild(notificationContainer);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+      notificationContainer.remove();
+    }, 3000);
+  }
+
+  // Format log lines with proper styling
+  function formatLogLine(line) {
+    return `<span class="terminal-line">${line}</span>`;
+  }
+
+  // Override the setLogsData function to include formatting
+  function setLogsData(log_type, logs, action) {
+    $(`#${log_type}`).attr('data-next-key', logs.nextKey);
+    const formattedLines = logs.lines.split('<br/>').map(formatLogLine).join('');
+    
+    if (action === 'refresh') {
+      $(`#${log_type} code`).html(formattedLines);
+    } else if (action === 'append') {
+      $(`#${log_type} code`).append(formattedLines);
+    } else if (action === 'prepend') {
+      $(`#${log_type} code`).prepend(formattedLines);
     }
   }
 </script>

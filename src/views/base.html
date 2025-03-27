@@ -2,46 +2,78 @@
 <head>
     <title>PM2 WebUI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0b1a">
     <link rel="shortcut icon" type="image/jpg" href="/assets/images/app/favicon.png"/>
+    
+    <!-- Core Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@tabler/core@1.0.0-beta2/dist/js/tabler.min.js"></script>
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="https://unpkg.com/@tabler/core@1.0.0-beta2/dist/css/tabler.min.css">
     <link href="/assets/css/prism.css" rel="stylesheet" />
+    <link href="/assets/css/dark-theme.css" rel="stylesheet" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        pre, code, .terminal-output, .command-output {
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+    </style>
 </head>
-<body>
-    <header class="navbar navbar-expand-md navbar-light d-print-none">
+<body class="theme-dark">
+    <!-- Main Header -->
+    <header class="navbar navbar-expand-md navbar-dark d-print-none glass-effect">
         <div class="container-xl">
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-            <a href=".">
-              <img src="/assets/images/app/logo-dark.png" width="110" height="32" alt="PM2 WebUI Logo" class="navbar-brand-image">
-            </a>
-          </h1>
-          <div class="navbar-nav flex-row order-md-last">
-            <div class="nav-item dropdown">
-              <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
-                <span class="avatar avatar-sm" style="background-image: url(/assets/images/app/user.svg)"></span>
-                <div class="d-none d-xl-block ps-2">
-                  <div>System Admin</div>
-                </div>
-              </a>
-              <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <a href="/logout" class="dropdown-item">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"></path>
-                    <path d="M7 12h14l-3 -3m0 6l3 -3"></path>
-                  </svg>
-                  &ensp;Logout
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Logo -->
+            <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+                <a href="." class="d-flex align-items-center">
+                    <img src="/assets/images/app/logo-dark.png" width="110" height="32" alt="PM2 WebUI Logo" class="navbar-brand-image">
                 </a>
-              </div>
+            </h1>
+
+            <!-- User Menu -->
+            <div class="navbar-nav flex-row order-md-last">
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link d-flex lh-1 text-reset p-0 hover-lift" data-bs-toggle="dropdown" aria-label="Open user menu">
+                        <span class="avatar avatar-sm glass-effect" style="background-image: url(/assets/images/app/user.svg)"></span>
+                        <div class="d-none d-xl-block ps-2">
+                            <div class="fw-semibold">System Admin</div>
+                            <div class="text-muted small">Administrator</div>
+                        </div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <a href="/logout" class="dropdown-item d-flex align-items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"></path>
+                                <path d="M7 12h14l-3 -3m0 6l3 -3"></path>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
     </header>
-    <%- body %>
+
+    <!-- Main Content -->
+    <main class="container-xl py-4">
+        <%- body %>
+    </main>
+
+    <!-- Core Scripts -->
     <script src="/assets/js/main.js"></script>
 </body>
 </html>
