@@ -11,7 +11,9 @@
     "dev": "cross-env NODE_ENV=development nodemon --watch src --ext js,html --ignore 'src/**/*.test.js'",
     "dev:debug": "cross-env NODE_ENV=development nodemon --inspect --watch src --ext js,html",
     "lint": "eslint src/**/*.js",
-    "format": "prettier --write \"src/**/*.{js,html}\""
+    "format": "prettier --write \"src/**/*.{js,html}\"",
+    "create-user": "node src/scripts/create-user.js",
+    "generate-key": "node src/scripts/generate-key.js"
   },
   "keywords": [],
   "author": "Surya T",
@@ -20,6 +22,7 @@
     "@koa/router": "^10.0.0",
     "ansi-to-html": "^0.6.14",
     "axios": "^1.8.4",
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "dotenv": "^8.2.0",
     "envfile": "^6.17.0",

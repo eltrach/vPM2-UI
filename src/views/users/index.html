@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<head>
+    <title>User Management - vPM2 UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0b1a">
+    <link rel="shortcut icon" type="image/jpg" href="/assets/images/app/favicon.png"/>
+    
+    <!-- Core Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@tabler/core@1.0.0-beta2/dist/js/tabler.min.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://unpkg.com/@tabler/core@1.0.0-beta2/dist/css/tabler.min.css">
+    <link href="/assets/css/prism.css" rel="stylesheet" />
+    <link href="/assets/css/dark-theme.css" rel="stylesheet" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0b1a;
+        }
+        pre, code, .terminal-output, .command-output {
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+        .card {
+            background-color: #1a1b2e;
+            border: 1px solid #2d2e3f;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-control {
+            background-color: #2d2e3f;
+            border: 1px solid #3d3e4f;
+            color: #ffffff;
+        }
+        .form-control:focus {
+            background-color: #2d2e3f;
+            border-color: #4d4e5f;
+            color: #ffffff;
+        }
+        .btn-primary {
+            background-color: #206bc4;
+            border-color: #206bc4;
+        }
+        .btn-primary:hover {
+            background-color: #1a5aa0;
+            border-color: #1a5aa0;
+        }
+        .text-muted {
+            color: #8a8b9c !important;
+        }
+        .alert-danger {
+            background-color: #d63939;
+            border-color: #d63939;
+            color: #ffffff;
+        }
+        .table {
+            color: #ffffff;
+        }
+        .table th {
+            background-color: #2d2e3f;
+            border-bottom: 1px solid #3d3e4f;
+        }
+        .table td {
+            border-bottom: 1px solid #3d3e4f;
+        }
+        .badge {
+            font-weight: 500;
+        }
+        .badge-admin {
+            background-color: #206bc4;
+        }
+        .badge-user {
+            background-color: #2fb344;
+        }
+    </style>
+</head>
+<body class="theme-dark">
+    <div class="page">
+        <%- include('../partials/header') %>
+        
+        <div class="page-wrapper">
+            <div class="container-xl">
+                <div class="page-header d-print-none">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="page-title">User Management</h2>
+                        </div>
+                        <div class="col-auto ms-auto d-print-none">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Add User
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <div class="container-xl">
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table class="table table-vcenter card-table">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Role</th>
+                                        <th>Last Login</th>
+                                        <th>Created At</th>
+                                        <th>Status</th>
+                                        <th class="w-1"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% users.forEach(function(user) { %>
+                                        <tr>
+                                            <td><%= user.username %></td>
+                                            <td>
+                                                <span class="badge <%= user.role === 'admin' ? 'badge-admin' : 'badge-user' %>">
+                                                    <%= user.role %>
+                                                </span>
+                                            </td>
+                                            <td class="text-muted">
+                                                <%= user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never' %>
+                                            </td>
+                                            <td class="text-muted">
+                                                <%= new Date(user.createdAt).toLocaleString() %>
+                                            </td>
+                                            <td>
+                                                <% if (user.lockedUntil && new Date(user.lockedUntil) > new Date()) { %>
+                                                    <span class="badge bg-danger">Locked</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-success">Active</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <div class="btn-list flex-nowrap">
+                                                    <button class="btn btn-sm btn-outline-primary" onclick="changePassword('<%= user.username %>')">
+                                                        Change Password
+                                                    </button>
+                                                    <% if (user.username !== currentUser.username) { %>
+                                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('<%= user.username %>')">
+                                                            Delete
+                                                        </button>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal modal-blur fade" id="addUserModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="addUserForm" action="/api/users" method="POST">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" name="role" required>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal modal-blur fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="changePasswordForm" action="/api/users/change-password" method="POST">
+                    <input type="hidden" name="username" id="changePasswordUsername">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" name="newPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" name="confirmPassword" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function changePassword(username) {
+            document.getElementById('changePasswordUsername').value = username;
+            new bootstrap.Modal(document.getElementById('changePasswordModal')).show();
+        }
+
+        function deleteUser(username) {
+            if (confirm(`Are you sure you want to delete user "${username}"?`)) {
+                fetch(`/api/users/${username}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Failed to delete user');
+                    }
+                });
+            }
+        }
+
+        document.getElementById('addUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+            }).then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to add user');
+                }
+            });
+        });
+
+        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            if (data.newPassword !== data.confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            fetch('/api/users/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: data.username,
+                    newPassword: data.newPassword
+                })
+            }).then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to change password');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -62,6 +62,25 @@
             border-color: #d63939;
             color: #ffffff;
         }
+        .password-toggle {
+            position: relative;
+        }
+        .password-toggle .toggle-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #8a8b9c;
+        }
+        .password-toggle .toggle-icon:hover {
+            color: #ffffff;
+        }
+        .security-info {
+            font-size: 0.8rem;
+            color: #8a8b9c;
+            margin-top: 0.5rem;
+        }
     </style>
 </head>
 <body class="theme-dark">
@@ -69,7 +88,7 @@
         <div class="text-center mb-4">
             <a href="."><img src="/assets/images/app/logo-dark.png" height="36" alt="PM2 WebUI Logo"></a>
         </div>
-        <form class="card card-md" action="/login" method="POST" autocomplete="off">
+        <form class="card card-md" action="/login" method="POST" autocomplete="off" id="loginForm">
             <div class="card-body text-center">
                 <div class="mb-4">
                     <h2 class="card-title text-white">Application Login</h2>
@@ -78,14 +97,26 @@
                     <span class="avatar avatar-xl mb-3 glass-effect" style="background-image: url(/assets/images/app/user.svg)"></span>
                 </div>
                 <div class="mb-3">
-                    <input name="username" type="username" class="form-control text-center" placeholder="Username" value="<%= login.username %>" required>
+                    <input name="username" type="text" class="form-control text-center" placeholder="Username" value="<%= login.username %>" required autocomplete="username">
                 </div>
-                <div class="mb-4">
-                    <input name="password" type="password" class="form-control text-center" placeholder="Password" value="<%= login.password %>" required>
+                <div class="mb-4 password-toggle">
+                    <input name="password" type="password" class="form-control text-center" placeholder="Password" value="<%= login.password %>" required autocomplete="current-password">
+                    <span class="toggle-icon" onclick="togglePassword(this)">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <path d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7"/>
+                        </svg>
+                    </span>
                 </div>
                 <div class="mb-3">
                     <button class="btn btn-primary w-100" type="submit">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><rect x="5" y="11" width="14" height="10" rx="2"></rect><circle cx="12" cy="16" r="1"></circle><path d="M8 11v-5a4 4 0 0 1 8 0"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <rect x="5" y="11" width="14" height="10" rx="2"/>
+                            <circle cx="12" cy="16" r="1"/>
+                            <path d="M8 11v-5a4 4 0 0 1 8 0"/>
+                        </svg>
                         Login
                     </button>
                 </div>
@@ -94,10 +125,10 @@
                         <div class="d-flex">
                             <div>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-alert-circle" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <circle cx="12" cy="12" r="9"></circle>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <circle cx="12" cy="12" r="9"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
                                 </svg>
                             </div>
                             <div class="px-2">
@@ -107,17 +138,52 @@
                         <a class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="close"></a>
                     </div>
                 <% } %>
+                <div class="security-info">
+                    <p>For security reasons, your account will be locked after 5 failed attempts.</p>
+                    <p>All login attempts are logged and monitored.</p>
+                </div>
                 <div class="mt-4">
                     <span class="small text-muted">Developed by iken</span>
                     <a href="https://github.com/eltrach/vPM2-UI" target="_blank" class="ms-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#8a8b9c" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+                            <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5"/>
                         </svg>
                     </a>
                 </div>
             </div>
         </form>
     </div>
+
+    <script>
+        function togglePassword(icon) {
+            const input = icon.previousElementSibling;
+            if (input.type === "password") {
+                input.type = "text";
+                icon.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <line x1="3" y1="3" x2="21" y2="21"/>
+                        <path d="M10.584 10.587a2 2 0 0 0 2.828 2.83"/>
+                        <path d="M9.363 5.365a9.466 9.466 0 0 1 2.637 -.365c4 0 7.333 2.333 10 7c-.778 1.361 -1.612 2.524 -2.503 3.488m-2.14 1.861c-1.631 1.072 -3.415 1.651 -5.357 1.651c-4 0 -7.333 -2.333 -10 -7c1.369 -2.395 2.913 -4.175 4.632 -5.341"/>
+                    </svg>
+                `;
+            } else {
+                input.type = "password";
+                icon.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <circle cx="12" cy="12" r="2"/>
+                        <path d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7"/>
+                    </svg>
+                `;
+            }
+        }
+
+        // Prevent form resubmission on page refresh
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
 </body>
 </html>
