@@ -32,6 +32,53 @@
         </svg>
         Restart All Applications
       </button>
+      <button
+        class="btn btn-danger ms-2"
+        data-bs-toggle="modal"
+        data-bs-target="#modal-restart-server"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="icon icon-tabler icon-tabler-power"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M7 6a7.75 7.75 0 1 0 10 0"></path>
+          <line x1="12" y1="4" x2="12" y2="12"></line>
+        </svg>
+        Restart Server
+      </button>
+      <button
+        class="btn btn-info ms-2"
+        data-bs-toggle="modal"
+        data-bs-target="#modal-restart-db"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="icon icon-tabler icon-tabler-database"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <ellipse cx="12" cy="6" rx="8" ry="3"></ellipse>
+          <path d="M4 6v6a8 3 0 0 0 16 0v-6"></path>
+          <path d="M4 12v6a8 3 0 0 0 16 0v-6"></path>
+        </svg>
+        Restart MariaDB
+      </button>
     </div>
     <% apps.forEach(function (app) {%>
     <div class="col-md-3 mb-5">
@@ -469,6 +516,72 @@
   </div>
 </div>
 
+<!-- Restart Server Modal -->
+<div
+  class="modal modal-blur fade"
+  id="modal-restart-server"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="modal-title">Restart Server</div>
+        <div>
+          Are you sure you want to restart the server? This will affect all
+          running applications.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-link link-secondary me-auto"
+          data-bs-dismiss="modal"
+        >
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger" onclick="restartServer()">
+          Restart Server
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Restart MariaDB Modal -->
+<div
+  class="modal modal-blur fade"
+  id="modal-restart-db"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="modal-title">Restart MariaDB</div>
+        <div>
+          Are you sure you want to restart the MariaDB database? This will
+          temporarily disconnect all database connections.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-link link-secondary me-auto"
+          data-bs-dismiss="modal"
+        >
+          Cancel
+        </button>
+        <button type="button" class="btn btn-info" onclick="restartMariaDB()">
+          Restart MariaDB
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   async function restartAllApps() {
     try {
@@ -519,5 +632,45 @@
     setTimeout(() => {
       notificationContainer.remove();
     }, 3000);
+  }
+
+  function restartServer() {
+    fetch("/api/restart-server", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Server restart initiated. The system will reboot shortly.");
+        } else {
+          alert("Failed to restart server: " + data.message);
+        }
+      })
+      .catch((error) => {
+        alert("Error restarting server: " + error);
+      });
+  }
+
+  function restartMariaDB() {
+    fetch("/api/restart-mariadb", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert("MariaDB restart initiated successfully.");
+        } else {
+          alert("Failed to restart MariaDB: " + data.message);
+        }
+      })
+      .catch((error) => {
+        alert("Error restarting MariaDB: " + error);
+      });
   }
 </script>
